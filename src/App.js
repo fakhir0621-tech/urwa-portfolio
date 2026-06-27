@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './index.css';
 
 // ---- ICONS ----
@@ -146,8 +146,13 @@ function Lightbox({ images, startIndex, onClose }) {
   const [current, setCurrent] = useState(startIndex);
   const total = images.length;
 
-  const prev = () => setCurrent(i => (i - 1 + total) % total);
-  const next = () => setCurrent(i => (i + 1) % total);
+const prev = useCallback(() => {
+  setCurrent(i => (i - 1 + total) % total);
+}, [total]);
+
+const next = useCallback(() => {
+  setCurrent(i => (i + 1) % total);
+}, [total]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -452,34 +457,57 @@ function Navbar({ dark, toggleDark, activeSection }) {
 // ============================================================
 function Hero() {
   const [typed, setTyped] = useState('');
-  const titles = ['Frontend Developer', 'React.js Developer', 'UI/UX Designer'];
   const titleRef = useRef(0);
   const charRef  = useRef(0);
   const deleting = useRef(false);
 
-  useEffect(() => {
-    const tick = () => {
+    useEffect(() => {
+
+    const titles = [
+      'Frontend Developer',
+      'React.js Developer',
+      'UI/UX Designer'
+     ];
+
+      const tick = () => {
       const current = titles[titleRef.current];
-      if (!deleting.current) {
+
+       if (!deleting.current) {
         setTyped(current.slice(0, charRef.current + 1));
         charRef.current++;
-        if (charRef.current === current.length) { deleting.current = true; return 2000; }
+
+        if (charRef.current === current.length) {
+          deleting.current = true;
+          return 2000;
+        }
+
       } else {
+
         setTyped(current.slice(0, charRef.current - 1));
         charRef.current--;
+
         if (charRef.current === 0) {
           deleting.current = false;
           titleRef.current = (titleRef.current + 1) % titles.length;
           return 400;
         }
       }
+
       return deleting.current ? 60 : 90;
-    };
-    let timeout;
-    const run = () => { const delay = tick(); timeout = setTimeout(run, delay); };
-    timeout = setTimeout(run, 800);
-    return () => clearTimeout(timeout);
-  }, [titles]);
+     };
+
+     let timeout;
+
+     const run = () => {
+      const delay = tick();
+      timeout = setTimeout(run, delay);
+     };
+
+     timeout = setTimeout(run, 800);
+
+     return () => clearTimeout(timeout);
+
+    }, []);
 
   const handleDownloadCV = () => {
     const link = document.createElement('a');
