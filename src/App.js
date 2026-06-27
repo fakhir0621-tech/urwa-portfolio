@@ -159,7 +159,7 @@ function Lightbox({ images, startIndex, onClose }) {
     window.addEventListener('keydown', handler);
     document.body.style.overflow = 'hidden';
     return () => { window.removeEventListener('keydown', handler); document.body.style.overflow = ''; };
-  }, []);
+  }, [next, onClose, prev]);
 
   // Touch swipe support
   const touchStartX = useRef(null);
@@ -479,7 +479,7 @@ function Hero() {
     const run = () => { const delay = tick(); timeout = setTimeout(run, delay); };
     timeout = setTimeout(run, 800);
     return () => clearTimeout(timeout);
-  }, []);
+  }, [titles]);
 
   const handleDownloadCV = () => {
     const link = document.createElement('a');
